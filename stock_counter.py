@@ -6,7 +6,7 @@ from pages import (
     add_loads, month_stats, year_stats, add_income,
     create_stock, graphic, total
 )
-from pages.helper import resource_path, start_sql
+from src.helper import resource_path, start_sql
 from src.global_enums.literals import (
     Titles, InfoTexts, ButtonTexts
 )
@@ -82,9 +82,9 @@ class StockCounter():
         for ind, button in enumerate(buttons):
             button.grid(row=ind, column=0, sticky=W)
         logging.info('первая страница отрисована')
-        self.root.mainloop()
 
 
 if __name__ == '__main__':
     stock = StockCounter()
     stock.start()
+    stock.root.mainloop()

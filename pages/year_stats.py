@@ -4,13 +4,15 @@ from tkmacosx import CircleButton
 from tkinter import (
     Button, Entry, Label, W, N, LabelFrame, messagebox
 )
-from .helper import (
-    clear_frame, resource_path, month_year_validate, create_month_data
+from src.helper import (
+    clear_frame, resource_path, create_month_data
 )
+from src.validators import month_year_validate
 from src.global_enums.literals import (
     Titles, InfoTexts, LabelTexts, ButtonTexts
 )
 from src.global_enums.colours import ElementColour
+from configure import DB_NAME
 
 
 def year_stats(frame):
@@ -37,38 +39,38 @@ def show_year_loads(frame, year):
     if month_year_validate(1, year):
         return
     clear_frame(frame)
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        try:
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
             results = cursor.execute(
                 ''' SELECT day, month, year, photo_load, video_load
                     FROM loads WHERE year=:year ''',
                 {'year': year}).fetchall()
-        except Exception:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.ERROR_TEXT.value
-            )
-            return
-        month_results = {}
-        for line in results:
-            if int(line[1]) in month_results:
-                month_results[int(line[1])].append(line)
-            else:
-                month_results[int(line[1])] = [line, ]
-        for i in range(1, 13):
-            if i not in month_results:
-                month_data = create_month_data(i, year)
-                if not month_data:
-                    return
-            else:
-                month_data = month_results[i]
-            month_frame = LabelFrame(frame, text=str(i))
-            month_frame.grid(row=(i - 1) // 4, column=(i - 1) % 4, sticky=N)
-            for ind, day_data in enumerate(month_data):
-                day_frame = LabelFrame(month_frame)
-                day_frame.grid(row=ind // 7, column=ind % 7, sticky=N)
-                day_for_year_stats(day_frame, day_data)
+    except Exception:
+        messagebox.showinfo(
+            title=Titles.WARN_TITLE.value,
+            message=InfoTexts.ERROR_TEXT.value
+        )
+        return
+    month_results = {}
+    for line in results:
+        if int(line[1]) in month_results:
+            month_results[int(line[1])].append(line)
+        else:
+            month_results[int(line[1])] = [line, ]
+    for i in range(1, 13):
+        if i not in month_results:
+            month_data = create_month_data(i, year)
+            if not month_data:
+                return
+        else:
+            month_data = month_results[i]
+        month_frame = LabelFrame(frame, text=str(i))
+        month_frame.grid(row=(i - 1) // 4, column=(i - 1) % 4, sticky=N)
+        for ind, day_data in enumerate(month_data):
+            day_frame = LabelFrame(month_frame)
+            day_frame.grid(row=ind // 7, column=ind % 7, sticky=N)
+            day_for_year_stats(day_frame, day_data)
 
 
 def day_for_year_stats(frame, line):

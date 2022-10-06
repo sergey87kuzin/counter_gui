@@ -62,3 +62,10 @@ class LabelTexts(Enum):
     GRAPHIC_TYPE = 'вид графика'
     MONTH_STATS = 'Статистика месяца'
     YEAR_STATS = 'Статистика года'
+    GRAPHIC_TOP = 'Построение графика'
+    TOTAL_TOP = 'Итоговая таблица'
+
+
+class ErrorMessages(Enum):
+    WRONG_BUTTON_COUNT = 'Неверное число кнопок'
+    WRONG_BUTTON_NAME = 'Неверное название кнопки'

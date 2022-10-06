@@ -3,14 +3,16 @@ from tkmacosx import CircleButton
 from tkinter import (
     Button, Label, LabelFrame, messagebox
 )
-from .helper import (
-    clear_frame, resource_path, month_year_validate,
+from src.helper import (
+    clear_frame, resource_path,
     date_insert, create_month_data
 )
+from src.validators import month_year_validate
 from src.global_enums.literals import (
     Titles, InfoTexts, LabelTexts, ButtonTexts
 )
 from src.global_enums.colours import ElementColour
+from configure import DB_NAME
 
 
 def month_stats(frame):
@@ -31,19 +33,19 @@ def show_stats(frame, month, year):
     if month_year_validate(month, year):
         return
     clear_frame(frame)
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        try:
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
             results = cursor.execute(
                 ''' SELECT day, month, year, photo_load, video_load
                     FROM loads WHERE month=:month AND year=:year ''',
                 {'month': month, 'year': year}).fetchall()
-        except Exception:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.ERROR_TEXT.value
-            )
-            return True
+    except Exception:
+        messagebox.showinfo(
+            title=Titles.WARN_TITLE.value,
+            message=InfoTexts.ERROR_TEXT.value
+        )
+        return True
     if not results:
         results = create_month_data(month, year)
         if not results:

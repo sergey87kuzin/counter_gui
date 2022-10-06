@@ -4,16 +4,19 @@ import matplotlib.pyplot as plt
 from tkinter import (
     Button, Label, messagebox, ttk
 )
-from .helper import clear_frame, resource_path, date_insert
+from src.helper import clear_frame, resource_path, date_insert
 from src.global_enums.literals import (
     Choices, Titles, InfoTexts, LabelTexts, ButtonTexts
 )
+from configure import DB_NAME
 matplotlib.use('TkAgg')
 
 
 def graphic(frame):
     ''' задать параметры графика '''
     clear_frame(frame)
+    graphic_title = Label(frame, text=LabelTexts.GRAPHIC_TOP.value)
+    graphic_title.grid(row=0, column=0, columnspan=2)
     month_input, year_input = date_insert(frame)
     Label(frame, text=LabelTexts.GRAPHIC_TYPE.value).grid(
         row=4, column=0
@@ -30,56 +33,49 @@ def graphic(frame):
 
 def create_graphic(month, year, graphic_type):
     ''' Построение графиков '''
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        if graphic_type == Choices.GRAPHICS.value[0]:
-            try:
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
+            if graphic_type == Choices.GRAPHICS.value[0]:
                 data = cursor.execute(
                     ''' SELECT month, sum(photo_sold), sum(video_sold),
                     sum(amount_sold) FROM sales WHERE year=:year
                     GROUP BY month ''',
                     {'year': year}
                 ).fetchall()
-            except Exception:
-                messagebox.showinfo(
-                    title=Titles.WARN_TITLE.value,
-                    message=InfoTexts.CHOOSE_GRAPH.value
-                )
-                return
-            if not data:
-                messagebox.showinfo(
-                    title=Titles.WARN_TITLE.value,
-                    message=InfoTexts.NO_YEAR_DATA.value
-                )
-                return
-            print_graphic(data)
-        elif graphic_type == Choices.GRAPHICS.value[1]:
-            try:
+                if not data:
+                    messagebox.showinfo(
+                        title=Titles.WARN_TITLE.value,
+                        message=InfoTexts.NO_YEAR_DATA.value
+                    )
+                    return
+                print_graphic(data)
+            elif graphic_type == Choices.GRAPHICS.value[1]:
                 data = cursor.execute(
                     ''' SELECT stock, sum(photo_sold), sum(video_sold),
                     sum(amount_sold) FROM sales WHERE month=:month
                     AND year=:year GROUP BY stock ''',
                     {'month': month, 'year': year}
                 ).fetchall()
-            except Exception:
+                if not data:
+                    messagebox.showinfo(
+                        title=Titles.WARN_TITLE.value,
+                        message=InfoTexts.NO_MONTH_DATA.value
+                    )
+                    return
+                print_graphic(data)
+            else:
                 messagebox.showinfo(
                     title=Titles.WARN_TITLE.value,
                     message=InfoTexts.CHOOSE_GRAPH.value
                 )
                 return
-            if not data:
-                messagebox.showinfo(
-                    title=Titles.WARN_TITLE.value,
-                    message=InfoTexts.NO_MONTH_DATA.value
-                )
-                return
-            print_graphic(data)
-        else:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.CHOOSE_GRAPH.value
-            )
-            return
+    except Exception:
+        messagebox.showinfo(
+            title=Titles.WARN_TITLE.value,
+            message=InfoTexts.ERROR_TEXT.value
+        )
+        return
 
 
 def print_graphic(data):

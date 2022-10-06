@@ -2,26 +2,36 @@ import sqlite3
 from tkinter import (
     Button, Entry, Label, messagebox, ttk
 )
-from .helper import (
+from src.helper import (
     resource_path, clear_frame, date_insert, registrate_inputs,
-    month_year_validate, int_validate, float_validate, create_sales_month_data
+    create_sales_month_data
 )
+from src.validators import month_year_validate, int_validate, float_validate
 from src.global_enums.literals import (
     Titles, InfoTexts, LabelTexts, ButtonTexts
 )
+from configure import DB_NAME
 
 
 def add_income(frame):
     ''' внести данные по продажам '''
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        stocks = cursor.execute('SELECT stock FROM stocks').fetchall()
-        if not stocks:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.WARN_STOCK_TEXT.value
-            )
-            return
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
+            stocks = cursor.execute('SELECT stock FROM stocks').fetchall()
+            if not stocks:
+                messagebox.showinfo(
+                    title=Titles.WARN_TITLE.value,
+                    message=InfoTexts.WARN_STOCK_TEXT.value
+                )
+                return
+    except Exception as e:
+        messagebox.showinfo(
+            title=Titles.WARN_TITLE.value,
+            message=str(e)
+        )
+        return
+
     clear_frame(frame)
     stocks = [stock[0] for stock in stocks]
     loads_title = Label(frame, text=LabelTexts.SALES.value)
@@ -65,9 +75,9 @@ def update_income(
             message=InfoTexts.WARN_NO_STOCK.value
         )
         return
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        try:
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
             record = cursor.execute(
                 '''SELECT stock FROM sales WHERE month=:month
                 AND year=:year AND stock=:stock''',
@@ -97,13 +107,13 @@ def update_income(
                     'stock': stock
                 })
             conn.commit()
-        except Exception:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.ERROR_TEXT.value
-            )
-            return
+    except Exception:
         messagebox.showinfo(
-                title=Titles.SUCCESS_TITLE.value,
-                message=InfoTexts.SUCCESS_TEXT.value
-            )
+            title=Titles.WARN_TITLE.value,
+            message=InfoTexts.ERROR_TEXT.value
+        )
+        return
+    messagebox.showinfo(
+            title=Titles.SUCCESS_TITLE.value,
+            message=InfoTexts.SUCCESS_TEXT.value
+        )

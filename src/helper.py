@@ -3,11 +3,11 @@ import sys
 import sqlite3
 from datetime import date
 import calendar
-from tkmacosx import CircleButton
 from tkinter import Entry, Label, W, messagebox
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts
 )
+from .validators import month_year_validate
 
 
 def start_sql():
@@ -59,67 +59,6 @@ def registrate_inputs(texts, entries, off):
         text.grid(row=ind+off, column=0, sticky=W)
     for ind, entry in enumerate(entries):
         entry.grid(row=ind+off, column=1, sticky=W)
-
-
-def month_year_validate(month, year):
-    try:
-        month = int(month)
-        year = int(year)
-    except Exception:
-        messagebox.showinfo(
-            title=Titles.WARN_TITLE.value,
-            message=InfoTexts.WRONG_TYPE.value
-        )
-        return True
-    if (not month or not year or month < 1 or month > 12 or
-            year < 1 or year > 99):
-        messagebox.showinfo(
-            title=Titles.WARN_TITLE.value,
-            message=InfoTexts.WRONG_INPUT.value
-        )
-        return True
-
-
-def date_validate(day, month, year):
-    days = calendar.TextCalendar(firstweekday=0).formatmonth(
-        int('20' + year), int(month)
-    )
-    if day not in days:
-        messagebox.showinfo(
-            title=Titles.WARN_TITLE.value,
-            message=InfoTexts.WRONG_INPUT.value
-        )
-        return True
-
-
-def int_validate(value):
-    try:
-        if not value:
-            raise TypeError
-        value = int(value)
-        if value < 0:
-            raise TypeError
-    except Exception:
-        messagebox.showinfo(
-            title=Titles.WARN_TITLE.value,
-            message=InfoTexts.WRONG_INPUT.value
-        )
-        return True
-
-
-def float_validate(value):
-    try:
-        if not value:
-            raise TypeError
-        value = float(value)
-        if value < 0:
-            raise TypeError
-    except Exception:
-        messagebox.showinfo(
-            title=Titles.WARN_TITLE.value,
-            message=InfoTexts.WRONG_INPUT.value
-        )
-        return True
 
 
 def resource_path(relative_path):

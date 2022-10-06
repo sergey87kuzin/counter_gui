@@ -3,13 +3,15 @@ from datetime import date
 from tkinter import (
     Button, Entry, Label, W, messagebox
 )
-from .helper import (
-    clear_frame, date_insert, registrate_inputs, month_year_validate,
-    date_validate, int_validate, resource_path, create_month_data
+from src.helper import (
+    clear_frame, date_insert, registrate_inputs, resource_path,
+    create_month_data
 )
+from src.validators import month_year_validate, date_validate, int_validate
 from src.global_enums.literals import (
     Titles, InfoTexts, LabelTexts, ButtonTexts
 )
+from configure import DB_NAME
 
 
 def add_loads(frame):
@@ -51,9 +53,9 @@ def save_loads(day, month, year, photo, video):
         return
     if int_validate(photo) or int_validate(video):
         return
-    with sqlite3.connect(resource_path('gui.db')) as conn:
-        cursor = conn.cursor()
-        try:
+    try:
+        with sqlite3.connect(resource_path(DB_NAME)) as conn:
+            cursor = conn.cursor()
             day_line = cursor.execute(
                 ''' SELECT day, month, year, photo_load, video_load
                 FROM loads WHERE day=:date AND month=:month
@@ -77,13 +79,13 @@ def save_loads(day, month, year, photo, video):
                                 'year': year
                             })
             conn.commit()
-        except Exception:
-            messagebox.showinfo(
-                title=Titles.WARN_TITLE.value,
-                message=InfoTexts.ERROR_TEXT.value
-            )
-            return
+    except Exception:
         messagebox.showinfo(
-                title=Titles.SUCCESS_TITLE.value,
-                message=InfoTexts.SUCCESS_TEXT.value
-            )
+            title=Titles.WARN_TITLE.value,
+            message=InfoTexts.ERROR_TEXT.value
+        )
+        return
+    messagebox.showinfo(
+            title=Titles.SUCCESS_TITLE.value,
+            message=InfoTexts.SUCCESS_TEXT.value
+        )
