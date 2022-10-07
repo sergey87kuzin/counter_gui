@@ -4,7 +4,7 @@ import locale
 from tkinter import Button, Label, messagebox
 from src.helper import clear_frame, resource_path, date_insert
 from src.global_enums.literals import (
-    Titles, InfoTexts, ButtonTexts, LabelTexts
+    Titles, InfoTexts, ButtonTexts, LabelTexts, ButtonNames
 )
 from configure import DB_NAME
 
@@ -14,12 +14,12 @@ def total(frame):
     clear_frame(frame)
     total_title = Label(frame, text=LabelTexts.TOTAL_TOP.value)
     total_title.grid(row=0, column=0, columnspan=2)
-    month_input, year_input = date_insert(frame)
+    month_input, year_input = date_insert(frame, 'total')
     Button(
         frame, text=ButtonTexts.SHOW_STATS.value,
         command=lambda: show_total(
             frame, month_input.get(), year_input.get()
-        )
+        ), name=ButtonNames.TOTAL.value
     ).grid(row=4, column=0, columnspan=2)
 
 
@@ -50,11 +50,11 @@ def show_total(frame, month, year):
         )
         return
     for ind, stock in enumerate(stocks):
-        Label(frame, text=stock).grid(row=0, column=ind + 1)
-    for sale in year_sales:
-        Label(frame, text=str(sale[2])).grid(
-            row=sale[0], column=stocks.index(sale[1]) + 1
-        )
+        Label(frame, text=stock, name=stock).grid(row=0, column=ind + 1)
+    for ind, sale in enumerate(year_sales):
+        Label(
+            frame, text=str(sale[2]), name=f'{sale[1]}_sale_{ind}'
+        ).grid(row=sale[0], column=stocks.index(sale[1]) + 1)
         if sale[1] in stock_total:
             stock_total[sale[1]] += float(sale[2])
         else:

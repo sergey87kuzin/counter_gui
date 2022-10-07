@@ -26,6 +26,10 @@ def date_validate(day, month, year):
     days = calendar.TextCalendar(firstweekday=0).formatmonth(
         int('20' + year), int(month)
     )
+    if int(day) <= 0:
+        return True
+    if day[0] == '0':
+        day = day[-1]
     if day not in days:
         messagebox.showinfo(
             title=Titles.WARN_TITLE.value,

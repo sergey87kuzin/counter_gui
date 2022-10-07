@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 from tkinter import (
     Button, Entry, Label, messagebox, ttk
 )
@@ -8,7 +9,7 @@ from src.helper import (
 )
 from src.validators import month_year_validate, int_validate, float_validate
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts, ButtonTexts, ButtonNames, LabelNames
 )
 from configure import DB_NAME
 
@@ -36,18 +37,20 @@ def add_income(frame):
     stocks = [stock[0] for stock in stocks]
     loads_title = Label(frame, text=LabelTexts.SALES.value)
     loads_title.grid(row=0, column=0, columnspan=2)
-    month_input, year_input = date_insert(frame)
+    month_input, year_input = date_insert(frame, 'add_income')
     photo_text = Label(frame, text=LabelTexts.PHOTO.value)
     video_text = Label(frame, text=LabelTexts.VIDEO.value)
     income_text = Label(frame, text=LabelTexts.INCOME.value)
     stock_text = Label(frame, text=LabelTexts.STOCK.value)
-    photo_input = Entry(frame, width=3)
+    photo_input = Entry(frame, width=3, name=LabelNames.INCOME_PHOTO.value)
     photo_input.insert(0, 0)
-    video_input = Entry(frame, width=3)
+    video_input = Entry(frame, width=3, name=LabelNames.INCOME_VIDEO.value)
     video_input.insert(0, 0)
-    income_input = Entry(frame, width=7)
+    income_input = Entry(frame, width=7, name=LabelNames.INCOME_INCOME.value)
     income_input.insert(0, 0)
-    stock_input = ttk.Combobox(frame, values=stocks)
+    stock_input = ttk.Combobox(
+        frame, values=stocks, name=LabelNames.INCOME_STOCK.value
+    )
     texts = (photo_text, video_text, income_text, stock_text)
     entries = (photo_input, video_input, income_input, stock_input)
     registrate_inputs(texts, entries, 4)
@@ -56,7 +59,7 @@ def add_income(frame):
             month_input.get(), year_input.get(),
             photo_input.get(), video_input.get(), income_input.get(),
             stock_input.get()
-        )
+        ), name=ButtonNames.ADD_INCOME.value
     ).grid(row=8, column=0, columnspan=2)
 
 
@@ -113,7 +116,8 @@ def update_income(
             message=InfoTexts.ERROR_TEXT.value
         )
         return
-    messagebox.showinfo(
-            title=Titles.SUCCESS_TITLE.value,
-            message=InfoTexts.SUCCESS_TEXT.value
-        )
+    if 'pytest' not in sys.modules:
+        messagebox.showinfo(
+                title=Titles.SUCCESS_TITLE.value,
+                message=InfoTexts.SUCCESS_TEXT.value
+            )

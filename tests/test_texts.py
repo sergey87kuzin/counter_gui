@@ -54,16 +54,16 @@ def test_child(tk_work):
 
 
 @pytest.mark.parametrize('root_button, child_button, labels', [
-    ('!button', ButtonTexts.SAVE.value, ADD_LOADS_LABELS),
-    ('!button2', ButtonTexts.SHOW.value, MONTH_STATS_LABELS),
-    ('!button3', ButtonTexts.SHOW_STATS.value, YEAR_STATS_LABELS),
-    ('!button4', ButtonTexts.ADD.value, ADD_INCOME_LABELS),
-    ('!button5', ButtonTexts.CREATE.value, CREATE_STOCK_LABELS),
-    ('!button6', ButtonTexts.PLOT.value, GRAPHIC_LABELS),
-    ('!button7', ButtonTexts.SHOW_STATS.value, TOTAL_LABELS)
+    ('add_loads_button', ButtonTexts.SAVE.value, ADD_LOADS_LABELS),
+    ('month_stats_button', ButtonTexts.SHOW.value, MONTH_STATS_LABELS),
+    ('year_stats_button', ButtonTexts.SHOW_STATS.value, YEAR_STATS_LABELS),
+    ('add_income_button', ButtonTexts.ADD.value, ADD_INCOME_LABELS),
+    ('create_stock_button', ButtonTexts.CREATE.value, CREATE_STOCK_LABELS),
+    ('graphic_button', ButtonTexts.PLOT.value, GRAPHIC_LABELS),
+    ('total_button', ButtonTexts.SHOW_STATS.value, TOTAL_LABELS)
 ])
 def test_labels_buttons_test(
-        tk_work, root_button, child_button, labels):
+        tk_work, input_stocks, root_button, child_button, labels):
     ''' проверяем, что установленные на экране загрузок
     кнопки и ярлыки подписаны правильно '''
     tk_work.start()

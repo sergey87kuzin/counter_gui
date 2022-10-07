@@ -9,7 +9,8 @@ from src.helper import (
 )
 from src.validators import month_year_validate
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts, ButtonTexts,
+    ButtonNames, LabelNames
 )
 from src.global_enums.colours import ElementColour
 from configure import DB_NAME
@@ -26,11 +27,12 @@ def year_stats(frame):
     Label(frame, text=LabelTexts.YEAR.value).grid(
         row=1, column=0, sticky=W
     )
-    year_input = Entry(frame, width=2)
+    year_input = Entry(frame, width=2, name=LabelNames.YEAR_YEAR.value)
     year_input.insert(0, curr_year)
     year_input.grid(row=1, column=1, sticky=W)
     Button(
         frame, text=ButtonTexts.SHOW_STATS.value,
+        name=ButtonNames.YEAR.value,
         command=lambda: show_year_loads(frame, year_input.get())
     ).grid(row=4, column=0, columnspan=2)
 
@@ -65,10 +67,14 @@ def show_year_loads(frame, year):
                 return
         else:
             month_data = month_results[i]
-        month_frame = LabelFrame(frame, text=str(i))
+        month_frame = LabelFrame(
+            frame, text=str(i), name=f'year_stats_month_frame_{i}'
+        )
         month_frame.grid(row=(i - 1) // 4, column=(i - 1) % 4, sticky=N)
         for ind, day_data in enumerate(month_data):
-            day_frame = LabelFrame(month_frame)
+            day_frame = LabelFrame(
+                month_frame, name=f'day_frame_{ind}'
+            )
             day_frame.grid(row=ind // 7, column=ind % 7, sticky=N)
             day_for_year_stats(day_frame, day_data)
 
@@ -82,10 +88,12 @@ def day_for_year_stats(frame, line):
         if line[3] != 0:
             CircleButton(
                 frame, text='',
+                name=LabelNames.PHOTO_CIRCLE.value,
                 bg=ElementColour.PHOTO_CIRCLE.value, radius=5
             ).grid(row=1, column=0)
         if line[4] != 0:
             CircleButton(
                 frame, text='',
+                name=LabelNames.VIDEO_CIRCLE.value,
                 bg=ElementColour.VIDEO_CIRCLE.value, radius=5
             ).grid(row=1, column=1)

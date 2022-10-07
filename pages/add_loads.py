@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 from datetime import date
 from tkinter import (
     Button, Entry, Label, W, messagebox
@@ -9,7 +10,7 @@ from src.helper import (
 )
 from src.validators import month_year_validate, date_validate, int_validate
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts, ButtonTexts, ButtonNames, LabelNames
 )
 from configure import DB_NAME
 
@@ -24,15 +25,15 @@ def add_loads(frame):
     Label(frame, text=LabelTexts.DATE.value).grid(
         row=1, column=0, sticky=W
     )
-    date_input = Entry(frame, width=2)
+    date_input = Entry(frame, width=2, name=LabelNames.LOADS_DAY.value)
     date_input.insert(0, curr_date)
     date_input.grid(row=1, column=1, sticky=W)
-    month_input, year_input = date_insert(frame)
+    month_input, year_input = date_insert(frame, 'add_loads')
     photo_text = Label(frame, text=LabelTexts.PHOTO.value)
     video_text = Label(frame, text=LabelTexts.VIDEO.value)
-    photo_input = Entry(frame, width=3)
+    photo_input = Entry(frame, width=3, name=LabelNames.LOADS_PHOTO.value)
     photo_input.insert(0, 0)
-    video_input = Entry(frame, width=3)
+    video_input = Entry(frame, width=3, name=LabelNames.LOADS_VIDEO.value)
     video_input.insert(0, 0)
     texts = (photo_text, video_text)
     entries = (photo_input, video_input)
@@ -41,7 +42,7 @@ def add_loads(frame):
         frame, text=ButtonTexts.SAVE.value, command=lambda: save_loads(
             date_input.get(), month_input.get(), year_input.get(),
             photo_input.get(), video_input.get()
-        )
+        ), name=ButtonNames.ADD_LOADS.value
     ).grid(row=6, column=0, columnspan=2)
 
 
@@ -66,6 +67,7 @@ def save_loads(day, month, year, photo, video):
                 days = create_month_data(month, year)
                 if not days:
                     return
+                day_line = (day, month, year, 0, 0)
             cursor.execute('''UPDATE loads SET
                             photo_load = :photo,
                             video_load = :video
@@ -79,13 +81,15 @@ def save_loads(day, month, year, photo, video):
                                 'year': year
                             })
             conn.commit()
-    except Exception:
+    except Exception as e:
         messagebox.showinfo(
             title=Titles.WARN_TITLE.value,
-            message=InfoTexts.ERROR_TEXT.value
+            message=str(e)
+            # message=InfoTexts.ERROR_TEXT.value
         )
         return
-    messagebox.showinfo(
-            title=Titles.SUCCESS_TITLE.value,
-            message=InfoTexts.SUCCESS_TEXT.value
-        )
+    if 'pytest' not in sys.modules:
+        messagebox.showinfo(
+                title=Titles.SUCCESS_TITLE.value,
+                message=InfoTexts.SUCCESS_TEXT.value
+            )

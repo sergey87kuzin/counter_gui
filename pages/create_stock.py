@@ -1,8 +1,10 @@
 import sqlite3
+import sys
 from tkinter import Button, Entry, Label, messagebox
 from src.helper import clear_frame, resource_path
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts, ButtonTexts, ButtonNames,
+    LabelNames
 )
 from configure import DB_NAME
 
@@ -14,11 +16,12 @@ def create_stock(frame):
         row=0, column=0, columnspan=2
     )
     Label(frame, text=LabelTexts.STOCK.value).grid(row=1, column=0)
-    stock_name = Entry(frame, width=25)
+    stock_name = Entry(frame, width=25, name=LabelNames.STOCK.value)
     stock_name.grid(row=1, column=1)
     Button(
         frame, text=ButtonTexts.CREATE.value,
-        command=lambda: save_stock(stock_name.get())
+        command=lambda: save_stock(stock_name.get()),
+        name=ButtonNames.STOCK.value
     ).grid(row=2, column=0, columnspan=2)
 
 
@@ -51,7 +54,8 @@ def save_stock(stock_name):
             message=InfoTexts.ERROR_TEXT.value
         )
         return
-    messagebox.showinfo(
-            title=Titles.SUCCESS_TITLE.value,
-            message=InfoTexts.STOCK_CREATED.value
-        )
+    if 'pytest' not in sys.modules:
+        messagebox.showinfo(
+                title=Titles.SUCCESS_TITLE.value,
+                message=InfoTexts.STOCK_CREATED.value
+            )

@@ -6,7 +6,7 @@ from tkinter import (
 )
 from src.helper import clear_frame, resource_path, date_insert
 from src.global_enums.literals import (
-    Choices, Titles, InfoTexts, LabelTexts, ButtonTexts
+    Choices, Titles, InfoTexts, LabelTexts, ButtonTexts, ButtonNames
 )
 from configure import DB_NAME
 matplotlib.use('TkAgg')
@@ -17,7 +17,7 @@ def graphic(frame):
     clear_frame(frame)
     graphic_title = Label(frame, text=LabelTexts.GRAPHIC_TOP.value)
     graphic_title.grid(row=0, column=0, columnspan=2)
-    month_input, year_input = date_insert(frame)
+    month_input, year_input = date_insert(frame, 'graphic')
     Label(frame, text=LabelTexts.GRAPHIC_TYPE.value).grid(
         row=4, column=0
     )
@@ -27,7 +27,7 @@ def graphic(frame):
         frame, text=ButtonTexts.PLOT.value,
         command=lambda: create_graphic(
             month_input.get(), year_input.get(), graphic_type.get()
-        )
+        ), name=ButtonNames.GRAPHIC.value
     ).grid(row=5, column=0, columnspan=2)
 
 

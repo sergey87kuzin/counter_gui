@@ -9,7 +9,8 @@ from src.helper import (
 )
 from src.validators import month_year_validate
 from src.global_enums.literals import (
-    Titles, InfoTexts, LabelTexts, ButtonTexts
+    Titles, InfoTexts, LabelTexts, ButtonTexts, ButtonNames,
+    LabelNames
 )
 from src.global_enums.colours import ElementColour
 from configure import DB_NAME
@@ -21,10 +22,12 @@ def month_stats(frame):
     Label(frame, text=LabelTexts.MONTH_STATS.value).grid(
         row=0, column=0, columnspan=2
     )
-    month_input, year_input = date_insert(frame)
+    month_input, year_input = date_insert(frame, 'month_stats')
     Button(
         frame, text=ButtonTexts.SHOW.value,
-        command=lambda: show_stats(frame, month_input.get(), year_input.get())
+        command=lambda: show_stats(
+            frame, month_input.get(), year_input.get()
+        ), name=ButtonNames.MONTH.value
     ).grid(row=4, column=0, columnspan=2)
 
 
@@ -51,7 +54,9 @@ def show_stats(frame, month, year):
         if not results:
             return
     for ind, result in enumerate(results):
-        day_frame = LabelFrame(frame, text=str(result[0]))
+        day_frame = LabelFrame(
+            frame, name=f'day{ind}', text=str(result[0])
+        )
         day_frame.grid(row=ind // 7, column=ind % 7)
         day_loads(day_frame, result)
 
@@ -61,9 +66,11 @@ def day_loads(frame, line):
     if line[0] != 0:
         CircleButton(
             frame, text=str(line[3]),
+            name=LabelNames.PHOTO_CIRCLE.value,
             bg=ElementColour.PHOTO_CIRCLE.value, radius=15
         ).grid(row=0, column=0)
         CircleButton(
             frame, text=str(line[4]),
+            name=LabelNames.VIDEO_CIRCLE.value,
             bg=ElementColour.VIDEO_CIRCLE.value, radius=15
         ).grid(row=0, column=1)
